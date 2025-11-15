@@ -1,0 +1,11 @@
+# Use the official MySQL 8.0 image as the base.
+FROM mysql:8.0
+
+# Copy the local initialization script ('db/init.sql') into the special 
+# directory '/docker-entrypoint-initdb.d/' inside the container.
+# The official MySQL image automatically executes any .sql or .sh files 
+# found here on the very first start-up, setting up the database schema and initial data.
+COPY db/init.sql /docker-entrypoint-initdb.d/
+
+# The base image already exposes port 3306 and handles the CMD to start 
+# the MySQL server, keeping this Dockerfile concise and efficient.

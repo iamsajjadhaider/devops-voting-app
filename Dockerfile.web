@@ -1,0 +1,17 @@
+# Use the robust base image with PHP 8.2 and Apache, as requested.
+FROM php:8.2-apache
+
+# Install the mysqli extension, which is essential for PHP to communicate with MySQL.
+# We chain the commands using '&&' to minimize image layers and ensure efficiency.
+# The 'docker-php-ext-install' command is the standard way to install PHP extensions 
+# in the official PHP Docker images.
+RUN docker-php-ext-install mysqli \
+    && docker-php-ext-enable mysqli
+
+# Copy the contents of the local 'web' directory into the Apache document root 
+# inside the container (/var/www/html/). This makes the application accessible.
+COPY web/ /var/www/html/
+
+# The base image (php:8.2-apache) automatically handles exposing port 80 
+# and starting the Apache web server, so no explicit CMD or EXPOSE instructions are needed.
+# This results in a minimal and efficient Dockerfile.

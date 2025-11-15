@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  # Database Service (MySQL)
+  db:
+    # Build the image using the dedicated Dockerfile for the database
+    build:
+      context: .
+      dockerfile: Dockerfile.db
+    
+    # Environment variables for MySQL root user and database creation
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: voting_app
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+
+    # Volume for persistent storage: maps the database files to a named volume
+    volumes:
+      - voting_data:/var/lib/mysql
+
+    # Set restart policy
+    restart: always
+
+  # Web Service (PHP/Apache Frontend)
+  web:
+    # Build the image using the dedicated Dockerfile for the web application
+    build:
+      context: .
+      dockerfile: Dockerfile.web
+      
+    # Map host port 8080 to container port 80 (Apache default)
+    ports:
+      - "8080:80"
+      
+    # Ensure the web container waits for the database container to be available
+    depends_on:
+      - db
+      
+    # Expose the port 80 for internal communication
+    expose:
+      - "80"
+    
+    # Set restart policy
+    restart: unless-stopped
+
+# Named volume definition for database persistence
+volumes:
+  voting_data:
+    driver: local
